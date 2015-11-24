@@ -12,7 +12,6 @@ Sideburn
 ## Features
 
 - [x] No `Foundation` dependency (**Linux ready**)
-Sideburn
 
 **Sideburn** is a fork of [GRMustache.swift](https://github.com/groue/GRMustache.swift).
 
