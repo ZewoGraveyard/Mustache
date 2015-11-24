@@ -13,6 +13,7 @@ Sideburn
 
 - [x] No `Foundation` dependency (**Linux ready**)
 Sideburn
+
 ## Installation
 
 ### CocoaPods
