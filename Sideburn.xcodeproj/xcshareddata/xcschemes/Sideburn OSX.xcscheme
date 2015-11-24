@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "561E725B1A8BDC2B004ED48B"
-               BuildableName = "Mustache.framework"
+               BuildableName = "Sideburn.framework"
                BlueprintName = "Sideburn OSX"
                ReferencedContainer = "container:Sideburn.xcodeproj">
             </BuildableReference>
@@ -44,7 +44,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "561E725B1A8BDC2B004ED48B"
-            BuildableName = "Mustache.framework"
+            BuildableName = "Sideburn.framework"
             BlueprintName = "Sideburn OSX"
             ReferencedContainer = "container:Sideburn.xcodeproj">
          </BuildableReference>
@@ -66,7 +66,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "561E725B1A8BDC2B004ED48B"
-            BuildableName = "Mustache.framework"
+            BuildableName = "Sideburn.framework"
             BlueprintName = "Sideburn OSX"
             ReferencedContainer = "container:Sideburn.xcodeproj">
          </BuildableReference>
@@ -84,7 +84,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "561E725B1A8BDC2B004ED48B"
-            BuildableName = "Mustache.framework"
+            BuildableName = "Sideburn.framework"
             BlueprintName = "Sideburn OSX"
             ReferencedContainer = "container:Sideburn.xcodeproj">
          </BuildableReference>

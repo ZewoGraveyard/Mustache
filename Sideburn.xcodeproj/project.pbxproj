@@ -293,10 +293,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		561E725C1A8BDC2B004ED48B /* Mustache.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Mustache.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		561E72661A8BDC2B004ED48B /* MustacheOSXTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MustacheOSXTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		563AE19719FBE47A0028C6C1 /* Mustache.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Mustache.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		563AE1A219FBE47A0028C6C1 /* MustacheiOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MustacheiOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		561E725C1A8BDC2B004ED48B /* Mustache.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Mustache.framework; path = Sideburn.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		561E72661A8BDC2B004ED48B /* MustacheOSXTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MustacheOSXTests.xctest; path = Sideburn.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		563AE19719FBE47A0028C6C1 /* Mustache.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Mustache.framework; path = Sideburn.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		563AE1A219FBE47A0028C6C1 /* MustacheiOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = MustacheiOSTests.xctest; path = Sideburn.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B0E59A151C04B4D9005C9983 /* Common.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		B0E59A171C04B4D9005C9983 /* Expression.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Expression.swift; sourceTree = "<group>"; };
 		B0E59A191C04B4D9005C9983 /* LocatedTag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocatedTag.swift; sourceTree = "<group>"; };
@@ -312,10 +312,8 @@
 		B0E59A261C04B4D9005C9983 /* EachFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EachFilter.swift; sourceTree = "<group>"; };
 		B0E59A271C04B4D9005C9983 /* HTMLEscapeHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTMLEscapeHelper.swift; sourceTree = "<group>"; };
 		B0E59A281C04B4D9005C9983 /* JavascriptEscapeHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JavascriptEscapeHelper.swift; sourceTree = "<group>"; };
-		B0E59A291C04B4D9005C9983 /* Localizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Localizer.swift; sourceTree = "<group>"; };
 		B0E59A2A1C04B4D9005C9983 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		B0E59A2B1C04B4D9005C9983 /* StandardLibrary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StandardLibrary.swift; sourceTree = "<group>"; };
-		B0E59A2C1C04B4D9005C9983 /* URLEscapeHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLEscapeHelper.swift; sourceTree = "<group>"; };
 		B0E59A2D1C04B4D9005C9983 /* ZipFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZipFilter.swift; sourceTree = "<group>"; };
 		B0E59A2E1C04B4D9005C9983 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B0E59A2F1C04B4D9005C9983 /* Sideburn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sideburn.h; sourceTree = "<group>"; };
@@ -560,10 +558,8 @@
 				B0E59A261C04B4D9005C9983 /* EachFilter.swift */,
 				B0E59A271C04B4D9005C9983 /* HTMLEscapeHelper.swift */,
 				B0E59A281C04B4D9005C9983 /* JavascriptEscapeHelper.swift */,
-				B0E59A291C04B4D9005C9983 /* Localizer.swift */,
 				B0E59A2A1C04B4D9005C9983 /* Logger.swift */,
 				B0E59A2B1C04B4D9005C9983 /* StandardLibrary.swift */,
-				B0E59A2C1C04B4D9005C9983 /* URLEscapeHelper.swift */,
 				B0E59A2D1C04B4D9005C9983 /* ZipFilter.swift */,
 			);
 			path = Goodies;
