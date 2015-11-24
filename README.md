@@ -7,7 +7,7 @@ Sideburn
 [![Carthage Compatible](https://img.shields.io/badge/Carthage-Compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![License MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat)](https://github.com/Carthage/Carthage)
 
-**Sideburn** provides Mustache templates for Swift 2 **Swift 2**.
+**Sideburn** provides Mustache templates for **Swift 2**.
 
 ## Features
 
