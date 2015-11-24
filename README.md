@@ -14,6 +14,21 @@ Sideburn
 - [x] No `Foundation` dependency (**Linux ready**)
 Sideburn
 
+**Sideburn** is a fork of [GRMustache.swift](https://github.com/groue/GRMustache.swift).
+
+## Usage
+
+```swift
+import Sideburn
+
+let data = [
+    "name": "Wolverine"
+]
+
+let template = try! Template(string: "Hello, {{name}}!")
+let rendering = try! template.render(Box(boxable: data)) // "Hello, Wolverine!"
+```
+
 ## Installation
 
 ### CocoaPods
