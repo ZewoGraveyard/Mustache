@@ -22,6 +22,8 @@ let package = Package(
 )
 ```
 
+**Mustache** is a fork of [GRMustache.swift](https://github.com/groue/GRMustache.swift).
+
 ## Community
 
 [![Slack](http://s13.postimg.org/ybwy92ktf/Slack.png)](http://slack.zewo.io)
