@@ -33,4 +33,4 @@ Join us on [Slack](http://slack.zewo.io).
 License
 -------
 
-**SQL** is released under the MIT license. See LICENSE for details.
+**Mustache** is released under the MIT license. See LICENSE for details.
