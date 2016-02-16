@@ -25,7 +25,7 @@
 The abstract syntax tree of a template
 */
 final class TemplateAST {
-    
+
     // A template AST can be "defined" or "undefined".
     //
     // Undefined template ASTs are used when parsing templates which embed a
@@ -35,31 +35,31 @@ final class TemplateAST {
     // become defined.
     //
     // See TemplateRepository.templateAST(named:relativeToTemplateID:error:).
-    enum Type {
+    enum TemplateASTType {
         case Undefined
         case Defined(nodes: [TemplateASTNode], contentType: ContentType)
     }
-    var type: Type
-    
-    private init(type: Type) {
+    var type: TemplateASTType
+
+    private init(type: TemplateASTType) {
         self.type = type
     }
-    
-    
+
+
     /**
     Returns an undefined TemplateAST.
     */
     convenience init() {
-        self.init(type: Type.Undefined)
+        self.init(type: TemplateASTType.Undefined)
     }
-    
+
     /**
     Returns a defined TemplateAST.
     */
     convenience init(nodes: [TemplateASTNode], contentType: ContentType) {
-        self.init(type: Type.Defined(nodes: nodes, contentType: contentType))
+        self.init(type: TemplateASTType.Defined(nodes: nodes, contentType: contentType))
     }
-    
+
     /**
     Returns nil if the template AST is undefined.
     */

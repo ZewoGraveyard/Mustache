@@ -22,52 +22,52 @@
 
 
 struct TemplateToken {
-    enum Type {
+    enum TemplateTokenType {
         /// text
         case Text(text: String)
-        
+
         /// {{ content }}
         case EscapedVariable(content: String, tagDelimiterPair: TagDelimiterPair)
-        
+
         /// {{{ content }}}
         case UnescapedVariable(content: String, tagDelimiterPair: TagDelimiterPair)
-        
+
         /// {{! comment }}
         case Comment
-        
+
         /// {{# content }}
         case Section(content: String, tagDelimiterPair: TagDelimiterPair)
-        
+
         /// {{^ content }}
         case InvertedSection(content: String, tagDelimiterPair: TagDelimiterPair)
-        
+
         /// {{/ content }}
         case Close(content: String)
-        
+
         /// {{> content }}
         case Partial(content: String)
-        
+
         /// {{= ... ... =}}
         case SetDelimiters
-        
+
         /// {{% content }}
         case Pragma(content: String)
-        
+
         /// {{< content }}
         case PartialOverride(content: String)
-        
+
         /// {{$ content }}
         case Block(content: String)
     }
-    
-    let type: Type
+
+    let type: TemplateTokenType
     let lineNumber: Int
     let templateID: TemplateID?
     let templateString: String
     let range: Range<String.Index>
-    
+
     var templateSubstring: String { return templateString[range] }
-    
+
     var tagDelimiterPair: TagDelimiterPair? {
         switch type {
         case .EscapedVariable(content: _, tagDelimiterPair: let tagDelimiterPair):
@@ -82,7 +82,7 @@ struct TemplateToken {
             return nil
         }
     }
-    
+
     var locationDescription: String {
         if let templateID = templateID {
             return "line \(lineNumber) of template \(templateID)"

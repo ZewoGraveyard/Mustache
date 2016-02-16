@@ -24,13 +24,13 @@ final class TemplateCompiler: TemplateTokenConsumer {
     private var state: CompilerState
     private let repository: TemplateRepository
     private let templateID: TemplateID?
-    
+
     init(contentType: ContentType, repository: TemplateRepository, templateID: TemplateID?) {
         self.state = .Compiling(CompilationState(contentType: contentType))
         self.repository = repository
         self.templateID = templateID
     }
-    
+
     func templateAST() throws -> TemplateAST {
         switch(state) {
         case .Compiling(let compilationState):
@@ -50,14 +50,14 @@ final class TemplateCompiler: TemplateTokenConsumer {
             throw compilationError
         }
     }
-    
-    
+
+
     // MARK: - TemplateTokenConsumer
-    
+
     func parser(parser: TemplateParser, didFailWithError error: ErrorType) {
         state = .Error(error)
     }
-    
+
     func parser(parser: TemplateParser, shouldContinueAfterParsingToken token: TemplateToken) -> Bool {
         switch(state) {
         case .Error:
@@ -65,15 +65,15 @@ final class TemplateCompiler: TemplateTokenConsumer {
         case .Compiling(let compilationState):
             do {
                 switch(token.type) {
-                    
+
                 case .SetDelimiters:
                     // noop
                     break
-                    
+
                 case .Comment:
                     // noop
                     break
-                    
+
                 case .Pragma(content: let content):
                     let pragma = content.stringByTrimmingCharactersInSet(CharacterSet.whitespaceAndNewline)
                     if pragma == "CONTENT_TYPE : TEXT" {
@@ -93,7 +93,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     } else {
                         throw MustacheError(kind: .ParseError, message:"Syntax should be \"CONTENT_TYPE : TEXT\" or \"CONTENT_TYPE : HTML\"", templateID: token.templateID, lineNumber: token.lineNumber)
                     }
-                    
+
                 case .Text(text: let text):
                     switch compilationState.currentScope.type {
                     case .PartialOverride:
@@ -110,7 +110,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     default:
                         compilationState.currentScope.appendNode(TemplateASTNode.text(text: text))
                     }
-                    
+
                 case .EscapedVariable(content: let content, tagDelimiterPair: _):
                     switch compilationState.currentScope.type {
                     case .PartialOverride:
@@ -127,7 +127,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                             throw MustacheError(kind: .ParseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
                         }
                     }
-                    
+
                 case .UnescapedVariable(content: let content, tagDelimiterPair: _):
                     switch compilationState.currentScope.type {
                     case .PartialOverride:
@@ -144,7 +144,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                             throw MustacheError(kind: .ParseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
                         }
                     }
-                    
+
                 case .Section(content: let content, tagDelimiterPair: _):
                     switch compilationState.currentScope.type {
                     case .PartialOverride:
@@ -161,7 +161,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                             throw MustacheError(kind: .ParseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
                         }
                     }
-                    
+
                 case .InvertedSection(content: let content, tagDelimiterPair: _):
                     switch compilationState.currentScope.type {
                     case .PartialOverride:
@@ -178,24 +178,24 @@ final class TemplateCompiler: TemplateTokenConsumer {
                             throw MustacheError(kind: .ParseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
                         }
                     }
-                    
+
                 case .Block(content: let content):
                     var empty: Bool = false
                     let blockName = try blockNameFromString(content, inToken: token, empty: &empty)
                     compilationState.pushScope(Scope(type: .Block(openingToken: token, blockName: blockName)))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
-                    
+
                 case .PartialOverride(content: let content):
                     var empty: Bool = false
                     let parentPartialName = try partialNameFromString(content, inToken: token, empty: &empty)
                     compilationState.pushScope(Scope(type: .PartialOverride(openingToken: token, parentPartialName: parentPartialName)))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
-                    
+
                 case .Close(content: let content):
                     switch compilationState.currentScope.type {
                     case .Root:
                         throw MustacheError(kind: .ParseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
-                        
+
                     case .Section(openingToken: let openingToken, expression: let closedExpression):
                         var empty: Bool = false
                         var expression: Expression?
@@ -211,7 +211,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         if expression != nil && expression != closedExpression {
                             throw MustacheError(kind: .ParseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
                         }
-                        
+
                         let templateASTNodes = compilationState.currentScope.templateASTNodes
                         let templateAST = TemplateAST(nodes: templateASTNodes, contentType: compilationState.contentType)
 
@@ -225,7 +225,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
 
                         compilationState.popCurrentScope()
                         compilationState.currentScope.appendNode(sectionTag)
-                        
+
                     case .InvertedSection(openingToken: let openingToken, expression: let closedExpression):
                         var empty: Bool = false
                         var expression: Expression?
@@ -241,10 +241,10 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         if expression != nil && expression != closedExpression {
                             throw MustacheError(kind: .ParseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
                         }
-                        
+
                         let templateASTNodes = compilationState.currentScope.templateASTNodes
                         let templateAST = TemplateAST(nodes: templateASTNodes, contentType: compilationState.contentType)
-                        
+
 //                        // TODO: uncomment and make it compile
 //                        if token.templateString !== openingToken.templateString {
 //                            fatalError("Not implemented")
@@ -252,10 +252,10 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         let templateString = token.templateString
                         let innerContentRange = openingToken.range.endIndex..<token.range.startIndex
                         let sectionTag = TemplateASTNode.section(templateAST: templateAST, expression: closedExpression, inverted: true, openingToken: openingToken, innerTemplateString: templateString[innerContentRange])
-                        
+
                         compilationState.popCurrentScope()
                         compilationState.currentScope.appendNode(sectionTag)
-                        
+
                     case .PartialOverride(openingToken: _, parentPartialName: let parentPartialName):
                         var empty: Bool = false
                         var partialName: String?
@@ -269,7 +269,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         if partialName != nil && partialName != parentPartialName {
                             throw MustacheError(kind: .ParseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
                         }
-                        
+
                         let parentTemplateAST = try repository.templateAST(named: parentPartialName, relativeToTemplateID:templateID)
                         switch parentTemplateAST.type {
                         case .Undefined:
@@ -279,13 +279,13 @@ final class TemplateCompiler: TemplateTokenConsumer {
                                 throw MustacheError(kind: .ParseError, message: "Content type mismatch", templateID: token.templateID, lineNumber: token.lineNumber)
                             }
                         }
-                        
+
                         let templateASTNodes = compilationState.currentScope.templateASTNodes
                         let templateAST = TemplateAST(nodes: templateASTNodes, contentType: compilationState.contentType)
                         let partialOverrideNode = TemplateASTNode.partialOverride(childTemplateAST: templateAST, parentTemplateAST: parentTemplateAST, parentPartialName: parentPartialName)
                         compilationState.popCurrentScope()
                         compilationState.currentScope.appendNode(partialOverrideNode)
-                        
+
                     case .Block(openingToken: _, blockName: let closedBlockName):
                         var empty: Bool = false
                         var blockName: String?
@@ -299,14 +299,14 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         if blockName != nil && blockName != closedBlockName {
                             throw MustacheError(kind: .ParseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
                         }
-                        
+
                         let templateASTNodes = compilationState.currentScope.templateASTNodes
                         let templateAST = TemplateAST(nodes: templateASTNodes, contentType: compilationState.contentType)
                         let blockNode = TemplateASTNode.block(innerTemplateAST: templateAST, name: closedBlockName)
                         compilationState.popCurrentScope()
                         compilationState.currentScope.appendNode(blockNode)
                     }
-                    
+
                 case .Partial(content: let content):
                     var empty: Bool = false
                     let partialName = try partialNameFromString(content, inToken: token, empty: &empty)
@@ -315,7 +315,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     compilationState.currentScope.appendNode(partialNode)
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                 }
-                
+
                 return true
             } catch {
                 state = .Error(error)
@@ -323,10 +323,10 @@ final class TemplateCompiler: TemplateTokenConsumer {
             }
         }
     }
-    
-    
+
+
     // MARK: - Private
-    
+
     private class CompilationState {
         var currentScope: Scope {
             return scopeStack[scopeStack.endIndex - 1]
@@ -339,48 +339,48 @@ final class TemplateCompiler: TemplateTokenConsumer {
                 return contentType
             }
         }
-        
+
         init(contentType: ContentType) {
             self.compilerContentType = .Unlocked(contentType)
             self.scopeStack = [Scope(type: .Root)]
         }
-        
+
         func popCurrentScope() {
             scopeStack.removeLast()
         }
-        
+
         func pushScope(scope: Scope) {
             scopeStack.append(scope)
         }
-        
+
         enum CompilerContentType {
             case Unlocked(ContentType)
             case Locked(ContentType)
         }
-        
+
         var compilerContentType: CompilerContentType
         private var scopeStack: [Scope]
     }
-    
+
     private enum CompilerState {
         case Compiling(CompilationState)
         case Error(ErrorType)
     }
-    
+
     private class Scope {
-        let type: Type
+        let type: ScopeType
         var templateASTNodes: [TemplateASTNode]
-        
-        init(type:Type) {
+
+        init(type: ScopeType) {
             self.type = type
             self.templateASTNodes = []
         }
-        
+
         func appendNode(node: TemplateASTNode) {
             templateASTNodes.append(node)
         }
-        
-        enum Type {
+
+        enum ScopeType {
             case Root
             case Section(openingToken: TemplateToken, expression: Expression)
             case InvertedSection(openingToken: TemplateToken, expression: Expression)
@@ -388,7 +388,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
             case Block(openingToken: TemplateToken, blockName: String)
         }
     }
-    
+
     private func blockNameFromString(string: String, inToken token: TemplateToken, inout empty: Bool) throws -> String {
         let whiteSpace = CharacterSet.whitespaceAndNewline
         let blockName = string.stringByTrimmingCharactersInSet(whiteSpace)
@@ -401,7 +401,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
         }
         return blockName
     }
-    
+
     private func partialNameFromString(string: String, inToken token: TemplateToken, inout empty: Bool) throws -> String {
         let whiteSpace = CharacterSet.whitespaceAndNewline
         let partialName = string.stringByTrimmingCharactersInSet(whiteSpace)

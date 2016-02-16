@@ -24,13 +24,13 @@
 Template instances render Mustache templates.
 */
 final public class Template {
-    
+
     // =========================================================================
     // MARK: - Loading templates
-    
+
     /**
     Parses a template string, and returns a template.
-    
+
     - parameter string: The template string.
     - parameter error:  If there is an error loading or parsing template and
                         partials, throws an error that describes the problem.
@@ -41,14 +41,14 @@ final public class Template {
         let templateAST = try repository.templateAST(string: string)
         self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
     }
-    
+
     // =========================================================================
     // MARK: - Rendering Templates
-    
+
     /**
     Renders a template with a context stack initialized with the provided box
     on top of the templates's base context.
-    
+
     - parameter box:   A boxed value used for evaluating Mustache tags.
     - parameter error: If there is an error rendering the tag, throws an error
                        that describes the problem.
@@ -58,22 +58,22 @@ final public class Template {
         let rendering = try render(baseContext.extendedContext(box))
         return rendering.string
     }
-    
+
     /**
     Returns the rendering of the receiver, evaluating mustache tags from values
     stored in the given context stack.
-    
+
     This method does not return a String, but a Rendering value that wraps both
     the rendered string and its content type (HTML or Text). It is intended to
     be used when you perform custom rendering in a `RenderFunction`.
-    
+
     - parameter context: A context stack
     - parameter error:   If there is an error rendering the tag, throws an
                          error that describes the problem.
     - returns: The template rendering.
-    
+
     See also:
-    
+
     - RenderFunction
     - Template.contentType
     */
@@ -81,53 +81,53 @@ final public class Template {
         let renderingEngine = RenderingEngine(templateAST: templateAST, context: context)
         return try renderingEngine.render()
     }
-    
+
     /**
     The content type of the template and of its renderings.
-    
+
     See `Configuration.contentType` for a full discussion of the content type of
     templates.
     */
     public var contentType: ContentType {
         return templateAST.contentType
     }
-    
-    
+
+
     // =========================================================================
     // MARK: - Configuring Templates
-    
+
     /**
     The template's base context: all renderings start from this context.
-    
+
     Its default value comes from the configuration of the template
     repository this template comes from.
-    
+
     You can set the base context to some custom context, or extend it with the
     `extendBaseContext` and `registerInBaseContext` methods.
-    
+
         // Renders "bar"
         let template = try! Template(string: "{{foo}}")
         template.baseContext = Context(Box(["foo": "bar"]))
         try! template.render()
-    
+
     See also:
-    
+
     - extendBaseContext
     - registerInBaseContext
     */
     public var baseContext: Context
-    
+
     /**
     Extends the base context with the provided boxed value. All renderings will
     start from this extended context.
-    
+
         // Renders "bar"
         let template = try! Template(string: "{{foo}}")
         template.extendBaseContext(Box(["foo": "bar"]))
         try! template.render()
-    
+
     See also:
-    
+
     - baseContext
     - registerInBaseContext
     - Context.extendedContext
@@ -135,13 +135,13 @@ final public class Template {
     public func extendBaseContext(box: MustacheBox) {
         baseContext = baseContext.extendedContext(box)
     }
-    
+
     /**
     Registers a key in the base context. All renderings will be able to access
     the provided box through this key.
-    
+
     Registered keys are looked up first when evaluating Mustache tags.
-    
+
         // Renders "bar"
         let template = try! Template(string: "{{foo}}")
         template.registerInBaseContext("foo", Box("bar"))
@@ -149,9 +149,9 @@ final public class Template {
 
         // Renders "bar" again, because the registered key "foo" has priority.
         try! template.render(Box(["foo": "qux"]))
-    
+
     See also:
-    
+
     - baseContext
     - extendBaseContext
     - Context.contextWithRegisteredKey
@@ -159,37 +159,37 @@ final public class Template {
     public func registerInBaseContext(key: String, _ box: MustacheBox) {
         baseContext = baseContext.contextWithRegisteredKey(key, box: box)
     }
-    
-    
+
+
     // =========================================================================
     // MARK: - Accessing Sibling Templates
-    
+
     /**
     The template repository that issued the receiver.
-    
+
     All templates belong a template repository:
-    
+
     - Templates returned by `init(string:)` have a template
       repository that can not load any template or partial by name.
-    
+
     - Templates returned by `init(path:encoding:)` have a template
       repository that loads templates and partials stored in the directory of
       the receiver, with the same file extension.
-    
+
     - Templates returned by `init(URL:encoding:)` have a template
       repository that loads templates and partials stored in the directory of
       the receiver, with the same file extension.
-    
+
     - Templates returned by `init(named:bundle:templateExtension:encoding:)`
       have a template repository that loads templates and partials stored as
       resources in the specified bundle.
-    
+
     - Templates returned by `TemplateRepository.template(named:)` and
       `TemplateRepository.template(string:)` belong to the invoked
       repository.
-    
+
     See also:
-    
+
     - TemplateRepository
     - init(string:)
     - init(path:)
@@ -197,19 +197,19 @@ final public class Template {
     - init(named:bundle:templateExtension:encoding:)
     */
     public let repository: TemplateRepository
-    
-    
+
+
     // =========================================================================
     // MARK: - Not public
-    
+
     let templateAST: TemplateAST
-    
+
     init(repository: TemplateRepository, templateAST: TemplateAST, baseContext: Context) {
         self.repository = repository
         self.templateAST = templateAST
         self.baseContext = baseContext
     }
-    
+
 }
 
 
@@ -221,28 +221,28 @@ extension Template : MustacheBoxable {
     /**
     `Template` adopts the `MustacheBoxable` protocol so that it can feed
     Mustache templates.
-    
+
     You should not directly call the `mustacheBox` property. Always use the
     `Box()` function instead:
-    
+
         template.mustacheBox   // Valid, but discouraged
         Box(template)          // Preferred
 
-    
+
     A template renders just like a partial tag:
-    
+
     - `{{template}}` renders like an embedded partial tag `{{>partial}}` that
       would refer to the same template.
-    
+
     - `{{#template}}...{{/template}}` renders like a partial override tag
       `{{<partial}}...{{/partial}}` that would refer to the same template.
-    
+
     The difference is that `{{>partial}}` is a hard-coded template name, when
     `{{template}}` is a template that you can choose at runtime.
-    
-    
+
+
     For example:
-    
+
         let template = try! Template(string: "<a href='{{url}}'>{{firstName}} {{lastName}}</a>")
         let data = [
             "firstName": Box("Salvador"),
@@ -250,10 +250,10 @@ extension Template : MustacheBoxable {
             "url": Box("/people/123"),
             "template": Box(template)
         ]
-    
+
         // <a href='/people/123'>Salvador Dali</a>
         try! Template(string: "{{template}}").render(Box(data))
-    
+
     Note that templates whose contentType is Text are HTML-escaped when they are
     included in an HTML template.
     */
@@ -272,7 +272,7 @@ extension Template : MustacheBoxable {
                     let partialOverrideNode = TemplateASTNode.partialOverride(
                         childTemplateAST: sectionTag.innerTemplateAST,
                         parentTemplateAST: self.templateAST)
-                    
+
                     // Only RenderingEngine knows how to render PartialOverrideNode.
                     // So wrap the node into a TemplateAST, and render.
                     let renderingEngine = RenderingEngine(

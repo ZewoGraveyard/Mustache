@@ -54,31 +54,31 @@ See also:
 - RenderFunction
 */
 final public class Context {
-    
+
     // =========================================================================
     // MARK: - Creating Contexts
-    
+
     /**
     Builds an empty Context.
     */
     public convenience init() {
         self.init(type: .Root)
     }
-    
+
     /**
     Builds a context that contains the provided box.
-    
+
     - parameter box: A box.
     - returns: A new context that contains *box*.
     */
     public convenience init(_ box: MustacheBox) {
         self.init(type: .Box(box: box, parent: Context()))
     }
-    
+
     /**
     Builds a context with a registered key. Registered keys are looked up first
     when evaluating Mustache tags.
-    
+
     - parameter key: An identifier.
     - parameter box: A box.
     - returns: A new context with *box* registered for *key*.
@@ -86,15 +86,15 @@ final public class Context {
     public convenience init(registeredKey key: String, box: MustacheBox) {
         self.init(type: .Root, registeredKeysContext: Context(Box(boxable: [key: box])))
     }
-    
-    
+
+
     // =========================================================================
     // MARK: - Deriving New Contexts
-    
+
     /**
     Returns a new context with the provided box pushed at the top of the context
     stack.
-    
+
     - parameter box: A box.
     - returns: A new context with *box* pushed at the top of the stack.
     */
@@ -102,11 +102,11 @@ final public class Context {
     public func extendedContext(box: MustacheBox) -> Context {
         return Context(type: .Box(box: box, parent: self), registeredKeysContext: registeredKeysContext)
     }
-    
+
     /**
     Returns a new context with the provided box at the top of the context stack.
     Registered keys are looked up first when evaluating Mustache tags.
-    
+
     - parameter key: An identifier.
     - parameter box: A box.
     - returns: A new context with *box* registered for *key*.
@@ -116,11 +116,11 @@ final public class Context {
         let registeredKeysContext = (self.registeredKeysContext ?? Context()).extendedContext(Box(boxable: [key: box]))
         return Context(type: self.type, registeredKeysContext: registeredKeysContext)
     }
-    
-    
+
+
     // =========================================================================
     // MARK: - Fetching Values from the Context Stack
-    
+
     /**
     Returns the top box of the context stack, the one that would be rendered by
     the `{{.}}` tag.
@@ -135,28 +135,28 @@ final public class Context {
             return parent.topBox
         }
     }
-    
+
     /**
     Returns the boxed value stored in the context stack for the given key.
-    
+
     The following search pattern is used:
-    
+
     1. If the key is "registered", returns the registered box for that key.
-    
+
     2. Otherwise, searches the context stack for a box that has a non-empty
        box for the key (see `InspectFunction`).
-    
+
     3. If none of the above situations occurs, returns the empty box.
-    
+
             let data = ["name": "Groucho Marx"]
             let context = Context(Box(data))
-    
+
             // "Groucho Marx"
             context.mustacheBoxForKey("name").value
 
     If you want the value for a full Mustache expression such as `user.name` or
     `uppercase(user.name)`, use the `mustacheBoxForExpression` method.
-    
+
     - parameter key: A key.
     - returns: The MustacheBox for *key*.
     */
@@ -167,7 +167,7 @@ final public class Context {
                 return box
             }
         }
-        
+
         switch type {
         case .Root:
             return Box()
@@ -182,20 +182,20 @@ final public class Context {
             return parent.mustacheBoxForKey(key)
         }
     }
-    
+
     /**
     Evaluates a Mustache expression such as `name`, or `uppercase(user.name)`.
-    
+
         let data = ["person": ["name": "Albert Einstein"]]
         let context = Context(Box(data))
 
         // "Albert Einstein"
         try! context.mustacheBoxForExpression("person.name").value
-    
+
     - parameter string: The expression string.
     - parameter error:  If there is a problem parsing or evaluating the
                         expression, throws an error that describes the problem.
-    
+
     - returns: The value of the expression.
     */
     public func mustacheBoxForExpression(string: String) throws -> MustacheBox {
@@ -205,20 +205,20 @@ final public class Context {
         let invocation = ExpressionInvocation(expression: expression)
         return try invocation.invokeWithContext(self)
     }
-    
-    
+
+
     // =========================================================================
     // MARK: - Not public
-    
-    private enum Type {
+
+    private enum ContextType {
         case Root
         case Box(box: MustacheBox, parent: Context)
         case PartialOverride(partialOverride: TemplateASTNode.PartialOverride, parent: Context)
     }
-    
+
     private var registeredKeysContext: Context?
-    private let type: Type
-    
+    private let type: ContextType
+
     var willRenderStack: [WillRenderFunction] {
         switch type {
         case .Root:
@@ -233,7 +233,7 @@ final public class Context {
             return parent.willRenderStack
         }
     }
-    
+
     var didRenderStack: [DidRenderFunction] {
         switch type {
         case .Root:
@@ -248,7 +248,7 @@ final public class Context {
             return parent.didRenderStack
         }
     }
-    
+
     var partialOverrideStack: [TemplateASTNode.PartialOverride] {
         switch type {
         case .Root:
@@ -259,8 +259,8 @@ final public class Context {
             return [partialOverride] + parent.partialOverrideStack
         }
     }
-    
-    private init(type: Type, registeredKeysContext: Context? = nil) {
+
+    private init(type: ContextType, registeredKeysContext: Context? = nil) {
         self.type = type
         self.registeredKeysContext = registeredKeysContext
     }

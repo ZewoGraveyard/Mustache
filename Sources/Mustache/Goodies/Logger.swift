@@ -21,34 +21,34 @@
 // THE SOFTWARE.
 
 extension StandardLibrary {
-    
+
     /**
     StandardLibrary.Logger is a tool intended for debugging templates.
-    
+
     It logs the rendering of variable and section tags such as `{{name}}` and
     `{{#name}}...{{/name}}`.
-    
+
     To activate logging, add a Logger to the base context of a template:
-    
+
         let template = try! Template(string: "{{name}} died at {{age}}.")
-    
+
         // Logs all tag renderings with NSLog():
         let logger = StandardLibrary.Logger()
         template.extendBaseContext(Box(logger))
-        
+
         // Render
         let data = ["name": "Freddy Mercury", "age": 45]
         let rendering = try! template.render(Box(data))
-    
+
         // In NSLog:
         // {{name}} at line 1 did render "Freddy Mercury" as "Freddy Mercury"
         // {{age}} at line 1 did render 45 as "45"
     */
     public final class Logger : MustacheBoxable {
-        
+
         /**
         Returns a Logger.
-        
+
         - parameter log: A closure that takes a String. Default one logs that
                          string with NSLog().
         - returns: a Logger
@@ -60,14 +60,14 @@ extension StandardLibrary {
                 self.log = { print($0) }
             }
         }
-        
+
         /**
         Logger adopts the `MustacheBoxable` protocol so that it can feed
         Mustache templates.
-        
+
         You should not directly call the `mustacheBox` property. Always use the
         `Box()` function instead:
-        
+
             localizer.mustacheBox   // Valid, but discouraged
             Box(localizer)          // Preferred
         */
@@ -76,13 +76,13 @@ extension StandardLibrary {
                 willRender: { (tag, box) in
                     if tag.type == .Section {
                         self.log("\(self.indentationPrefix)\(tag) will render \(box.valueDescription)")
-                        self.indentationLevel++
+                        self.indentationLevel += 1
                     }
                     return box
                 },
                 didRender: { (tag, box, string) in
                     if tag.type == .Section {
-                        self.indentationLevel--
+                        self.indentationLevel -= 1
                     }
                     if let string = string {
                         self.log("\(self.indentationPrefix)\(tag) did render \(box.valueDescription) as \(string.debugDescription)")
@@ -90,11 +90,11 @@ extension StandardLibrary {
                 }
             )
         }
-        
+
         var indentationPrefix: String {
             return String(count: indentationLevel * 2, repeatedValue: " " as Character)
         }
-        
+
         private let log: (String) -> Void
         private var indentationLevel: Int = 0
     }
