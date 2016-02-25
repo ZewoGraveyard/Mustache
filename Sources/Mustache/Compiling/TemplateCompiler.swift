@@ -451,9 +451,9 @@ extension String {
     func containsCharacterFromSet(characterSet: Set<Character>) -> Bool {
         for character in characters {
             if characterSet.contains(character) {
-                return false
+                return true
             }
         }
-        return true
+        return false
     }
 }
