@@ -51,13 +51,14 @@ final class TemplateParser {
 
     func parse(templateString:String, templateID: TemplateID?) {
         var currentDelimiters = ParserTagDelimiters(tagDelimiterPair: tagDelimiterPair)
+        let templateCharacters = templateString.characters
 
         let atString = { (index: String.Index, string: String?) -> Bool in
             guard let string = string else {
                 return false
             }
-            let subs = templateString.substringFromIndex(index)
-            return subs.hasPrefix(string)
+            let endIndex = index.advancedBy(string.characters.count, limit: templateCharacters.endIndex)
+            return templateCharacters[index..<endIndex].startsWith(string.characters)
         }
 
         var state: State = .Start
