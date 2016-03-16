@@ -523,7 +523,7 @@ extension MustacheBox {
         case 0:
             return "MustacheBox(Empty)"
         default:
-            let content = facets.joinWithSeparator(",")
+            let content = facets.joined(separator: ",")
             return "MustacheBox(\(content))"
         }
     }
@@ -539,14 +539,14 @@ extension MustacheBox {
         case 1:
             return facets.first!
         default:
-            return "(" + facets.joinWithSeparator(",") + ")"
+            return "(" + facets.joined(separator: ",") + ")"
         }
     }
     
     var facetsDescriptions: [String] {
         var facets = [String]()
         if let array = arrayValue {
-            let items = array.map { $0.valueDescription }.joinWithSeparator(",")
+            let items = array.map { $0.valueDescription }.joined(separator: ",")
             facets.append("[\(items)]")
         } else if let dictionary = dictionaryValue {
             if dictionary.isEmpty {
@@ -554,7 +554,7 @@ extension MustacheBox {
             } else {
                 let items = dictionary.map { (key, box) in
                     return "\(key.debugDescription):\(box.valueDescription)"
-                }.joinWithSeparator(",")
+                }.joined(separator: ",")
                 facets.append("[\(items)]")
             }
         } else if let value = value {

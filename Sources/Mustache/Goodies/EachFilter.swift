@@ -40,7 +40,7 @@ let EachFilter = Filter { (box: MustacheBox) -> MustacheBox in
     // (NSDictionary, [String: Int], [String: CustomObject], etc.
     if let dictionary = box.dictionaryValue {
         let count = dictionary.count
-        let transformedBoxes = dictionary.enumerate().map { (index: Int, element: (key: String, box: MustacheBox)) -> MustacheBox in
+        let transformedBoxes = dictionary.enumerated().map { (index: Int, element: (key: String, box: MustacheBox)) -> MustacheBox in
             let customRenderFunction: RenderFunction = { info in
                 var info = info
                 // Push positional keys in the context stack and then perform
@@ -73,7 +73,7 @@ let EachFilter = Filter { (box: MustacheBox) -> MustacheBox in
     // the boxed collection: NSArray, NSSet, [String], [CustomObject], etc.
     if let boxes = box.arrayValue {
         let count = boxes.count
-        let transformedBoxes = boxes.enumerate().map { (index: Int, box: MustacheBox) -> MustacheBox in
+        let transformedBoxes = boxes.enumerated().map { (index: Int, box: MustacheBox) -> MustacheBox in
             let customRenderFunction: RenderFunction = { info in
                 var info = info
                 // Push positional keys in the context stack and then perform

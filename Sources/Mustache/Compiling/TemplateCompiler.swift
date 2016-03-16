@@ -54,7 +54,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
 
     // MARK: - TemplateTokenConsumer
 
-    func parser(parser: TemplateParser, didFailWithError error: ErrorType) {
+    func parser(parser: TemplateParser, didFailWithError error: ErrorProtocol) {
         state = .Error(error)
     }
 
@@ -364,7 +364,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
 
     private enum CompilerState {
         case Compiling(CompilationState)
-        case Error(ErrorType)
+        case Error(ErrorProtocol)
     }
 
     private class Scope {
@@ -389,7 +389,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
         }
     }
 
-    private func blockNameFromString(string: String, inToken token: TemplateToken, inout empty: Bool) throws -> String {
+    private func blockNameFromString(string: String, inToken token: TemplateToken, empty: inout Bool) throws -> String {
         let whiteSpace = CharacterSet.whitespaceAndNewline
         let blockName = string.stringByTrimmingCharactersInSet(whiteSpace)
         if blockName.characters.count == 0 {
@@ -402,7 +402,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
         return blockName
     }
 
-    private func partialNameFromString(string: String, inToken token: TemplateToken, inout empty: Bool) throws -> String {
+    private func partialNameFromString(string: String, inToken token: TemplateToken, empty: inout Bool) throws -> String {
         let whiteSpace = CharacterSet.whitespaceAndNewline
         let partialName = string.stringByTrimmingCharactersInSet(whiteSpace)
         if partialName.characters.count == 0 {
@@ -426,24 +426,24 @@ extension String {
 
     private func stringByTrimmingFromStartCharactersInSet(characterSet: Set<Character>) -> String {
         var trimStartIndex: Int = characters.count
-        for (index, character) in characters.enumerate() {
+        for (index, character) in characters.enumerated() {
             if !characterSet.contains(character) {
                 trimStartIndex = index
                 break
             }
         }
-        return self[startIndex.advancedBy(trimStartIndex) ..< endIndex]
+        return self[startIndex.advanced(by: trimStartIndex) ..< endIndex]
     }
 
     private func stringByTrimmingFromEndCharactersInSet(characterSet: Set<Character>) -> String {
         var trimEndIndex: Int = characters.count
-        for (index, character) in characters.reverse().enumerate() {
+        for (index, character) in characters.reversed().enumerated() {
             if !characterSet.contains(character) {
                 trimEndIndex = index
                 break
             }
         }
-        return self[startIndex ..< startIndex.advancedBy(characters.count - trimEndIndex)]
+        return self[startIndex ..< startIndex.advanced(by: characters.count - trimEndIndex)]
     }
 }
 

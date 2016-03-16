@@ -130,7 +130,7 @@ public protocol MustacheBoxable {
 //
 // This protocol conformance is not only a matter of consistency. It is also
 // a convenience for the library implementation: it makes arrays
-// [MustacheBox] boxable via Box<C: CollectionType where C.Generator.Element: MustacheBoxable>(collection: C?)
+// [MustacheBox] boxable via Box<C: Collection where C.Iterator.Element: MustacheBoxable>(collection: C?)
 // and dictionaries [String:MustacheBox] boxable via Box<T: MustacheBoxable>(dictionary: [String: T]?)
 
 extension MustacheBox {
@@ -782,7 +782,7 @@ private func BoxAnyObject(object: AnyObject?) -> MustacheBox {
 
 // IMPLEMENTATION NOTE
 //
-// We don't provide any boxing function for `SequenceType`, because this type
+// We don't provide any boxing function for `Sequence`, because this type
 // makes no requirement on conforming types regarding whether they will be
 // destructively "consumed" by iteration (as stated by documentation).
 //
@@ -795,7 +795,7 @@ private func BoxAnyObject(object: AnyObject?) -> MustacheBox {
 // So we don't support boxing of sequences.
 
 // Support for all collections
-extension CollectionType {
+extension Collection {
     
     /**
     Concatenates the rendering of the collection items.
@@ -821,7 +821,7 @@ extension CollectionType {
                      whatever the type of the collection items.
     - returns: A Rendering
     */
-    private func renderItems(info: RenderingInfo, @noescape box: (Generator.Element) -> MustacheBox) throws -> Rendering {
+    private func renderItems(info: RenderingInfo, @noescape box: (Iterator.Element) -> MustacheBox) throws -> Rendering {
         // Prepare the rendering. We don't known the contentType yet: it depends on items
         var info = info
         var buffer = ""
@@ -898,7 +898,7 @@ extension CollectionType {
 }
 
 // Support for Set
-extension CollectionType where Index.Distance == Int {
+extension Collection where Index.Distance == Int {
     /**
     This function returns a MustacheBox that wraps a set-like collection.
     
@@ -913,14 +913,14 @@ extension CollectionType where Index.Distance == Int {
                        whatever the type of the collection items.
     - returns: A MustacheBox that wraps the collection.
     */
-    private func mustacheBoxWithSetValue(value: Any?, box: (Generator.Element) -> MustacheBox) -> MustacheBox {
+    private func mustacheBoxWithSetValue(value: Any?, box: (Iterator.Element) -> MustacheBox) -> MustacheBox {
         return MustacheBox(
             converter: MustacheBox.Converter(arrayValue: self.map({ box($0) })),
             value: value,
             boolValue: !isEmpty,
             keyedSubscript: { (key) in
                 switch key {
-                case "first":   // C: CollectionType
+                case "first":   // C: Collection
                     if let first = self.first {
                         return box(first)
                     } else {
@@ -947,7 +947,7 @@ extension CollectionType where Index.Distance == Int {
 }
 
 // Support for Array
-extension CollectionType where Index.Distance == Int, Index: BidirectionalIndexType {
+extension Collection where Index.Distance == Int, Index: BidirectionalIndex {
     /**
     This function returns a MustacheBox that wraps an array-like collection.
     
@@ -963,20 +963,20 @@ extension CollectionType where Index.Distance == Int, Index: BidirectionalIndexT
                        whatever the type of the collection items.
     - returns: A MustacheBox that wraps the collection.
     */
-    private func mustacheBoxWithArrayValue(value: Any?, box: (Generator.Element) -> MustacheBox) -> MustacheBox {
+    private func mustacheBoxWithArrayValue(value: Any?, box: (Iterator.Element) -> MustacheBox) -> MustacheBox {
         return MustacheBox(
             converter: MustacheBox.Converter(arrayValue: self.map({ box($0) })),
             value: value,
             boolValue: !isEmpty,
             keyedSubscript: { (key) in
                 switch key {
-                case "first":   // C: CollectionType
+                case "first":   // C: Collection
                     if let first = self.first {
                         return box(first)
                     } else {
                         return Box()
                     }
-                case "last":    // C.Index: BidirectionalIndexType
+                case "last":    // C.Index: BidirectionalIndex
                     if let last = self.last {
                         return box(last)
                     } else {
@@ -1044,7 +1044,7 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index.Distance == Int>(set set: C?) -> MustacheBox {
+public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.Index.Distance == Int>(set set: C?) -> MustacheBox {
     if let set = set {
         return set.mustacheBoxWithSetValue(set, box: { Box(boxable: $0) })
     } else {
@@ -1095,7 +1095,7 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(array array: C?) -> MustacheBox {
+public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.Index: BidirectionalIndex, C.Index.Distance == Int>(array array: C?) -> MustacheBox {
     if let array = array {
         return array.mustacheBoxWithArrayValue(array, box: { Box(boxable: $0) })
     } else {
@@ -1146,7 +1146,7 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(array array: C?) -> MustacheBox {
+public func Box<C: Collection, T where C.Iterator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndex, C.Index.Distance == Int>(array array: C?) -> MustacheBox {
     if let array = array {
         return array.mustacheBoxWithArrayValue(array, box: { Box(boxable: $0) })
     } else {
