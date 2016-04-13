@@ -68,7 +68,7 @@ public protocol TemplateRepositoryDataSource {
     - parameter baseTemplateID: The template ID of the enclosing template.
     - returns: A template ID.
     */
-    func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID?
+    func templateID(forName name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID?
     
     /**
     Returns the Mustache template string that matches the template ID.
@@ -78,7 +78,7 @@ public protocol TemplateRepositoryDataSource {
                             throws an error that describes the problem.
     - returns: A Mustache template string.
     */
-    func templateStringForTemplateID(templateID: TemplateID) throws -> String
+    func templateString(forTemplateID templateID: TemplateID) throws -> String
 }
 
 /**
@@ -185,7 +185,7 @@ final public class TemplateRepository {
                                 problem.
     - returns: A Mustache Template.
     */
-    public func template(string string: String) throws -> Template {
+    public func template(string: String) throws -> Template {
         let templateAST = try self.templateAST(string: string)
         return Template(repository: self, templateAST: templateAST, baseContext: lockedConfiguration.baseContext)
     }
@@ -239,7 +239,7 @@ final public class TemplateRepository {
             throw MustacheError(kind: .TemplateNotFound, message: "Missing dataSource", templateID: baseTemplateID)
         }
         
-        guard let templateID = dataSource.templateIDForName(name, relativeToTemplateID: baseTemplateID) else {
+        guard let templateID = dataSource.templateID(forName: name, relativeToTemplateID: baseTemplateID) else {
             if let baseTemplateID = baseTemplateID {
                 throw MustacheError(kind: .TemplateNotFound, message: "Template not found: \"\(name)\" from \(baseTemplateID)", templateID: baseTemplateID)
             } else {
@@ -252,7 +252,7 @@ final public class TemplateRepository {
             return templateAST
         }
         
-        let templateString = try dataSource.templateStringForTemplateID(templateID)
+        let templateString = try dataSource.templateString(forTemplateID: templateID)
         
         // Cache an empty AST for that name so that we support recursive
         // partials.
@@ -262,7 +262,7 @@ final public class TemplateRepository {
         do {
             let compiledAST = try self.templateAST(string: templateString, templateID: templateID)
             // Success: update the empty AST
-            templateAST.updateFromTemplateAST(compiledAST)
+            templateAST.update(fromTemplateAST: compiledAST)
             return templateAST
         } catch {
             // Failure: remove the empty AST
@@ -271,7 +271,7 @@ final public class TemplateRepository {
         }
     }
     
-    func templateAST(string string: String, templateID: TemplateID? = nil) throws -> TemplateAST {
+    func templateAST(string: String, templateID: TemplateID? = nil) throws -> TemplateAST {
         // A Compiler
         let compiler = TemplateCompiler(
             contentType: lockedConfiguration.contentType,
@@ -284,7 +284,7 @@ final public class TemplateRepository {
             tagDelimiterPair: lockedConfiguration.tagDelimiterPair)
         
         // Parse...
-        parser.parse(string, templateID: templateID)
+        parser.parse(templateString: string, templateID: templateID)
         
         // ...and extract the result from the Compiler
         return try compiler.templateAST()
@@ -314,11 +314,11 @@ final public class TemplateRepository {
             self.templates = templates
         }
         
-        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
+        func templateID(forName name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
             return name
         }
         
-        func templateStringForTemplateID(templateID: TemplateID) throws -> String {
+        func templateString(forTemplateID templateID: TemplateID) throws -> String {
             if let string = templates[templateID] {
                 return string
             } else {

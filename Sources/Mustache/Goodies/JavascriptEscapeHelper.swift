@@ -53,14 +53,14 @@ final class JavascriptEscapeHelper : MustacheBoxable {
             // rendering.
             return Box(render: { (info: RenderingInfo) -> Rendering in
                 let rendering = try box.render(info: info)
-                return try self.filter(rendering)
+                return try self.filter(rendering: rendering)
             })
         case .Section:
             return box
         }
     }
     
-    private class func escapeJavascript(string: String) -> String {
+    private class func escapeJavascript(_ string: String) -> String {
         // This table comes from https://github.com/django/django/commit/8c4a525871df19163d5bfdf5939eff33b544c2e2#django/template/defaultfilters.py
         //
         // Quoting Malcolm Tredinnick:

@@ -24,7 +24,7 @@
 extension TemplateAST : CustomDebugStringConvertible {
     /// A textual representation of `self`, suitable for debugging.
     var debugDescription: String {
-        let string = TemplateGenerator().stringFromTemplateAST(self)
+        let string = TemplateGenerator().string(fromTemplateAST: self)
         return "TemplateAST(\(string.debugDescription))"
     }
 }
@@ -32,7 +32,7 @@ extension TemplateAST : CustomDebugStringConvertible {
 extension Template : CustomDebugStringConvertible {
     /// A textual representation of `self`, suitable for debugging.
     public var debugDescription: String {
-        let string = TemplateGenerator().stringFromTemplateAST(templateAST)
+        let string = TemplateGenerator().string(fromTemplateAST: templateAST)
         return "Template(\(string.debugDescription))"
     }
 }
@@ -44,26 +44,26 @@ final class TemplateGenerator {
         self.configuration = configuration ?? DefaultConfiguration
     }
     
-    func stringFromTemplateAST(templateAST: TemplateAST) -> String {
+    func string(fromTemplateAST templateAST: TemplateAST) -> String {
         buffer = ""
-        renderTemplateAST(templateAST)
+        render(templateAST: templateAST)
         return buffer
     }
     
-    private func renderTemplateAST(templateAST: TemplateAST) {
+    private func render(templateAST: TemplateAST) {
         for node in templateAST.nodes {
-            renderTemplateASTNode(node)
+            render(templateASTNode: node)
         }
     }
 
-    func renderTemplateASTNode(node: TemplateASTNode) {
+    func render(templateASTNode node: TemplateASTNode) {
         switch node {
         case .BlockNode(let block):
             let tagStartDelimiter = configuration.tagDelimiterPair.0
             let tagEndDelimiter = configuration.tagDelimiterPair.1
             let name = block.name
             buffer.append("\(tagStartDelimiter)$\(name)\(tagEndDelimiter)")
-            renderTemplateAST(block.innerTemplateAST)
+            render(templateAST: block.innerTemplateAST)
             buffer.append("\(tagStartDelimiter)/\(name)\(tagEndDelimiter)")
             
         case .PartialOverrideNode(let partialOverride):
@@ -71,7 +71,7 @@ final class TemplateGenerator {
             let tagEndDelimiter = configuration.tagDelimiterPair.1
             let name = partialOverride.parentPartial.name ?? "<null>"
             buffer.append("\(tagStartDelimiter)<\(name)\(tagEndDelimiter)")
-            renderTemplateAST(partialOverride.childTemplateAST)
+            render(templateAST: partialOverride.childTemplateAST)
             buffer.append("\(tagStartDelimiter)/\(name)\(tagEndDelimiter)")
             
         case .PartialNode(let partial):
@@ -85,13 +85,13 @@ final class TemplateGenerator {
             // delimiters.
             let tagStartDelimiter = configuration.tagDelimiterPair.0
             let tagEndDelimiter = configuration.tagDelimiterPair.1
-            let expression = ExpressionGenerator().stringFromExpression(section.expression)
+            let expression = ExpressionGenerator().string(fromExpression: section.expression)
             if section.inverted {
                 buffer.append("\(tagStartDelimiter)^\(expression)\(tagEndDelimiter)")
             } else {
                 buffer.append("\(tagStartDelimiter)#\(expression)\(tagEndDelimiter)")
             }
-            renderTemplateAST(section.tag.innerTemplateAST)
+            render(templateAST: section.tag.innerTemplateAST)
             buffer.append("\(tagStartDelimiter)/\(expression)\(tagEndDelimiter)")
             
         case .TextNode(let text):
@@ -102,7 +102,7 @@ final class TemplateGenerator {
             // delimiters.
             let tagStartDelimiter = configuration.tagDelimiterPair.0
             let tagEndDelimiter = configuration.tagDelimiterPair.1
-            let expression = ExpressionGenerator().stringFromExpression(variable.expression)
+            let expression = ExpressionGenerator().string(fromExpression: variable.expression)
             if variable.escapesHTML {
                 buffer.append("\(tagStartDelimiter)\(expression)\(tagEndDelimiter)")
             } else if tagStartDelimiter == "{{" && tagEndDelimiter == "}}" {

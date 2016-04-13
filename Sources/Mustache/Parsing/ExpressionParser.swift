@@ -107,19 +107,19 @@ final class ExpressionParser {
             case .Identifier(identifierStart: let identifierStart):
                 switch c {
                 case " ", "\r", "\n", "\r\n", "\t":
-                    let identifier = string.substringWithRange(identifierStart..<i)
+                    let identifier = string.substring(withRange: identifierStart..<i)
                     state = .DoneExpressionPlusWhiteSpace(expression: Expression.Identifier(identifier: identifier))
                 case ".":
-                    let identifier = string.substringWithRange(identifierStart..<i)
+                    let identifier = string.substring(withRange: identifierStart..<i)
                     state = .WaitingForScopingIdentifier(baseExpression: Expression.Identifier(identifier: identifier))
                 case "(":
-                    let identifier = string.substringWithRange(identifierStart..<i)
+                    let identifier = string.substring(withRange: identifierStart..<i)
                     filterExpressionStack.append(Expression.Identifier(identifier: identifier))
                     state = .WaitingForAnyExpression
                 case ")":
                     if let filterExpression = filterExpressionStack.last {
                         filterExpressionStack.removeLast()
-                        let identifier = string.substringWithRange(identifierStart..<i)
+                        let identifier = string.substring(withRange: identifierStart..<i)
                         let expression = Expression.Filter(filterExpression: filterExpression, argumentExpression: Expression.Identifier(identifier: identifier), partialApplication: false)
                         state = .DoneExpression(expression: expression)
                     } else {
@@ -128,7 +128,7 @@ final class ExpressionParser {
                 case ",":
                     if let filterExpression = filterExpressionStack.last {
                         filterExpressionStack.removeLast()
-                        let identifier = string.substringWithRange(identifierStart..<i)
+                        let identifier = string.substring(withRange: identifierStart..<i)
                         filterExpressionStack.append(Expression.Filter(filterExpression: filterExpression, argumentExpression: Expression.Identifier(identifier: identifier), partialApplication: true))
                         state = .WaitingForAnyExpression
                     } else {
@@ -141,22 +141,22 @@ final class ExpressionParser {
             case .ScopingIdentifier(identifierStart: let identifierStart, baseExpression: let baseExpression):
                 switch c {
                 case " ", "\r", "\n", "\r\n", "\t":
-                    let identifier = string.substringWithRange(identifierStart..<i)
+                    let identifier = string.substring(withRange: identifierStart..<i)
                     let scopedExpression = Expression.Scoped(baseExpression: baseExpression, identifier: identifier)
                     state = .DoneExpressionPlusWhiteSpace(expression: scopedExpression)
                 case ".":
-                    let identifier = string.substringWithRange(identifierStart..<i)
+                    let identifier = string.substring(withRange: identifierStart..<i)
                     let scopedExpression = Expression.Scoped(baseExpression: baseExpression, identifier: identifier)
                     state = .WaitingForScopingIdentifier(baseExpression: scopedExpression)
                 case "(":
-                    let identifier = string.substringWithRange(identifierStart..<i)
+                    let identifier = string.substring(withRange: identifierStart..<i)
                     let scopedExpression = Expression.Scoped(baseExpression: baseExpression, identifier: identifier)
                     filterExpressionStack.append(scopedExpression)
                     state = .WaitingForAnyExpression
                 case ")":
                     if let filterExpression = filterExpressionStack.last {
                         filterExpressionStack.removeLast()
-                        let identifier = string.substringWithRange(identifierStart..<i)
+                        let identifier = string.substring(withRange: identifierStart..<i)
                         let scopedExpression = Expression.Scoped(baseExpression: baseExpression, identifier: identifier)
                         let expression = Expression.Filter(filterExpression: filterExpression, argumentExpression: scopedExpression, partialApplication: false)
                         state = .DoneExpression(expression: expression)
@@ -166,7 +166,7 @@ final class ExpressionParser {
                 case ",":
                     if let filterExpression = filterExpressionStack.last {
                         filterExpressionStack.removeLast()
-                        let identifier = string.substringWithRange(identifierStart..<i)
+                        let identifier = string.substring(withRange: identifierStart..<i)
                         let scopedExpression = Expression.Scoped(baseExpression: baseExpression, identifier: identifier)
                         filterExpressionStack.append(Expression.Filter(filterExpression: filterExpression, argumentExpression: scopedExpression, partialApplication: true))
                         state = .WaitingForAnyExpression
@@ -289,7 +289,7 @@ final class ExpressionParser {
             
         case .Identifier(identifierStart: let identifierStart):
             if filterExpressionStack.isEmpty {
-                let identifier = string.substringFromIndex(identifierStart)
+                let identifier = string.substring(fromIndex: identifierStart)
                 finalState = .Valid(expression: Expression.Identifier(identifier: identifier))
             } else {
                 finalState = .Error("Missing `)` character at index \(string.startIndex.distance(to: string.endIndex))")
@@ -297,7 +297,7 @@ final class ExpressionParser {
             
         case .ScopingIdentifier(identifierStart: let identifierStart, baseExpression: let baseExpression):
             if filterExpressionStack.isEmpty {
-                let identifier = string.substringFromIndex(identifierStart)
+                let identifier = string.substring(fromIndex: identifierStart)
                 let scopedExpression = Expression.Scoped(baseExpression: baseExpression, identifier: identifier)
                 finalState = .Valid(expression: scopedExpression)
             } else {
@@ -344,11 +344,11 @@ final class ExpressionParser {
 }
 
 extension String {
-    func substringWithRange(range: Range<Index>) -> String {
+    func substring(withRange range: Range<Index>) -> String {
         return self[range]
     }
 
-    func substringFromIndex(index: Index) -> String {
+    func substring(fromIndex index: Index) -> String {
         return self[index ..< endIndex]
     }
 }

@@ -75,7 +75,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     break
 
                 case .Pragma(content: let content):
-                    let pragma = content.stringByTrimmingCharactersInSet(CharacterSet.whitespaceAndNewline)
+                    let pragma = content.string(byTrimmingCharactersInSet: CharacterSet.whitespaceAndNewline)
                     if pragma == "CONTENT_TYPE : TEXT" {
                         switch compilationState.compilerContentType {
                         case .Unlocked:
@@ -118,7 +118,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     default:
                         var empty = false
                         do {
-                            let expression = try ExpressionParser().parse(content, empty: &empty)
+                            let expression = try ExpressionParser().parse(string: content, empty: &empty)
                             compilationState.currentScope.appendNode(TemplateASTNode.variable(expression: expression, contentType: compilationState.contentType, escapesHTML: true, token: token))
                             compilationState.compilerContentType = .Locked(compilationState.contentType)
                         } catch let error as MustacheError {
@@ -135,7 +135,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     default:
                         var empty = false
                         do {
-                            let expression = try ExpressionParser().parse(content, empty: &empty)
+                            let expression = try ExpressionParser().parse(string: content, empty: &empty)
                             compilationState.currentScope.appendNode(TemplateASTNode.variable(expression: expression, contentType: compilationState.contentType, escapesHTML: false, token: token))
                             compilationState.compilerContentType = .Locked(compilationState.contentType)
                         } catch let error as MustacheError {
@@ -152,7 +152,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     default:
                         var empty = false
                         do {
-                            let expression = try ExpressionParser().parse(content, empty: &empty)
+                            let expression = try ExpressionParser().parse(string: content, empty: &empty)
                             compilationState.pushScope(Scope(type: .Section(openingToken: token, expression: expression)))
                             compilationState.compilerContentType = .Locked(compilationState.contentType)
                         } catch let error as MustacheError {
@@ -169,7 +169,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     default:
                         var empty = false
                         do {
-                            let expression = try ExpressionParser().parse(content, empty: &empty)
+                            let expression = try ExpressionParser().parse(string: content, empty: &empty)
                             compilationState.pushScope(Scope(type: .InvertedSection(openingToken: token, expression: expression)))
                             compilationState.compilerContentType = .Locked(compilationState.contentType)
                         } catch let error as MustacheError {
@@ -181,13 +181,13 @@ final class TemplateCompiler: TemplateTokenConsumer {
 
                 case .Block(content: let content):
                     var empty: Bool = false
-                    let blockName = try blockNameFromString(content, inToken: token, empty: &empty)
+                    let blockName = try self.blockName(fromString: content, inToken: token, empty: &empty)
                     compilationState.pushScope(Scope(type: .Block(openingToken: token, blockName: blockName)))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
 
                 case .PartialOverride(content: let content):
                     var empty: Bool = false
-                    let parentPartialName = try partialNameFromString(content, inToken: token, empty: &empty)
+                    let parentPartialName = try partialName(fromString: content, inToken: token, empty: &empty)
                     compilationState.pushScope(Scope(type: .PartialOverride(openingToken: token, parentPartialName: parentPartialName)))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
 
@@ -200,7 +200,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         var empty: Bool = false
                         var expression: Expression?
                         do {
-                            expression = try ExpressionParser().parse(content, empty: &empty)
+                            expression = try ExpressionParser().parse(string: content, empty: &empty)
                         } catch let error as MustacheError {
                             if empty == false {
                                 throw error.errorWith(templateID: token.templateID, lineNumber: token.lineNumber)
@@ -230,7 +230,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         var empty: Bool = false
                         var expression: Expression?
                         do {
-                            expression = try ExpressionParser().parse(content, empty: &empty)
+                            expression = try ExpressionParser().parse(string: content, empty: &empty)
                         } catch let error as MustacheError {
                             if empty == false {
                                 throw error.errorWith(templateID: token.templateID, lineNumber: token.lineNumber)
@@ -260,7 +260,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         var empty: Bool = false
                         var partialName: String?
                         do {
-                            partialName = try partialNameFromString(content, inToken: token, empty: &empty)
+                            partialName = try self.partialName(fromString: content, inToken: token, empty: &empty)
                         } catch {
                             if empty == false {
                                 throw error
@@ -290,7 +290,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         var empty: Bool = false
                         var blockName: String?
                         do {
-                            blockName = try blockNameFromString(content, inToken: token, empty: &empty)
+                            blockName = try self.blockName(fromString: content, inToken: token, empty: &empty)
                         } catch {
                             if empty == false {
                                 throw error
@@ -309,7 +309,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
 
                 case .Partial(content: let content):
                     var empty: Bool = false
-                    let partialName = try partialNameFromString(content, inToken: token, empty: &empty)
+                    let partialName = try self.partialName(fromString: content, inToken: token, empty: &empty)
                     let partialTemplateAST = try repository.templateAST(named: partialName, relativeToTemplateID: templateID)
                     let partialNode = TemplateASTNode.partial(templateAST: partialTemplateAST, name: partialName)
                     compilationState.currentScope.appendNode(partialNode)
@@ -349,7 +349,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
             scopeStack.removeLast()
         }
 
-        func pushScope(scope: Scope) {
+        func pushScope(_ scope: Scope) {
             scopeStack.append(scope)
         }
 
@@ -376,7 +376,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
             self.templateASTNodes = []
         }
 
-        func appendNode(node: TemplateASTNode) {
+        func appendNode(_ node: TemplateASTNode) {
             templateASTNodes.append(node)
         }
 
@@ -389,26 +389,26 @@ final class TemplateCompiler: TemplateTokenConsumer {
         }
     }
 
-    private func blockNameFromString(string: String, inToken token: TemplateToken, empty: inout Bool) throws -> String {
+    private func blockName(fromString string: String, inToken token: TemplateToken, empty: inout Bool) throws -> String {
         let whiteSpace = CharacterSet.whitespaceAndNewline
-        let blockName = string.stringByTrimmingCharactersInSet(whiteSpace)
+        let blockName = string.string(byTrimmingCharactersInSet: whiteSpace)
         if blockName.characters.count == 0 {
             empty = true
             throw MustacheError(kind: .ParseError, message: "Missing block name", templateID: token.templateID, lineNumber: token.lineNumber)
-        } else if blockName.containsCharacterFromSet(whiteSpace) {
+        } else if blockName.contains(characterFromSet: whiteSpace) {
             empty = false
             throw MustacheError(kind: .ParseError, message: "Invalid block name", templateID: token.templateID, lineNumber: token.lineNumber)
         }
         return blockName
     }
 
-    private func partialNameFromString(string: String, inToken token: TemplateToken, empty: inout Bool) throws -> String {
+    private func partialName(fromString string: String, inToken token: TemplateToken, empty: inout Bool) throws -> String {
         let whiteSpace = CharacterSet.whitespaceAndNewline
-        let partialName = string.stringByTrimmingCharactersInSet(whiteSpace)
+        let partialName = string.string(byTrimmingCharactersInSet: whiteSpace)
         if partialName.characters.count == 0 {
             empty = true
             throw MustacheError(kind: .ParseError, message: "Missing template name", templateID: token.templateID, lineNumber: token.lineNumber)
-        } else if partialName.containsCharacterFromSet(whiteSpace) {
+        } else if partialName.contains(characterFromSet: whiteSpace) {
             empty = false
             throw MustacheError(kind: .ParseError, message: "Invalid template name", templateID: token.templateID, lineNumber: token.lineNumber)
         }
@@ -419,12 +419,12 @@ final class TemplateCompiler: TemplateTokenConsumer {
 
 
 extension String {
-    func stringByTrimmingCharactersInSet(characterSet: Set<Character>) -> String {
-        let string = stringByTrimmingFromStartCharactersInSet(characterSet)
-        return string.stringByTrimmingFromEndCharactersInSet(characterSet)
+    func string(byTrimmingCharactersInSet characterSet: Set<Character>) -> String {
+        let string = self.string(byTrimmingFromEndCharactersInSet: characterSet)
+        return string.string(byTrimmingFromEndCharactersInSet: characterSet)
     }
 
-    private func stringByTrimmingFromStartCharactersInSet(characterSet: Set<Character>) -> String {
+    private func string(byTrimmingFromStartCharactersInSet characterSet: Set<Character>) -> String {
         var trimStartIndex: Int = characters.count
         for (index, character) in characters.enumerated() {
             if !characterSet.contains(character) {
@@ -435,7 +435,7 @@ extension String {
         return self[startIndex.advanced(by: trimStartIndex) ..< endIndex]
     }
 
-    private func stringByTrimmingFromEndCharactersInSet(characterSet: Set<Character>) -> String {
+    private func string(byTrimmingFromEndCharactersInSet characterSet: Set<Character>) -> String {
         var trimEndIndex: Int = characters.count
         for (index, character) in characters.reversed().enumerated() {
             if !characterSet.contains(character) {
@@ -448,7 +448,7 @@ extension String {
 }
 
 extension String {
-    func containsCharacterFromSet(characterSet: Set<Character>) -> Bool {
+    func contains(characterFromSet characterSet: Set<Character>) -> Bool {
         for character in characters {
             if characterSet.contains(character) {
                 return true
