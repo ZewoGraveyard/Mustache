@@ -55,7 +55,7 @@ final public class Template {
     - returns: The rendered string.
     */
     public func render(box: MustacheBox = Box()) throws -> String {
-        let rendering = try render(baseContext.extendedContext(box))
+        let rendering = try render(context: baseContext.extendedContext(box))
         return rendering.string
     }
 
@@ -157,7 +157,7 @@ final public class Template {
     - Context.contextWithRegisteredKey
     */
     public func registerInBaseContext(key: String, _ box: MustacheBox) {
-        baseContext = baseContext.contextWithRegisteredKey(key, box: box)
+        baseContext = baseContext.context(withRegisteredKey: key, box: box)
     }
 
 
@@ -285,7 +285,7 @@ extension Template : MustacheBoxable {
                     // {{ template }} behaves just like {{> partial }}
                     //
                     // Let's simply render the template:
-                    return try self.render(info.context)
+                    return try self.render(context: info.context)
                 }
         })
     }

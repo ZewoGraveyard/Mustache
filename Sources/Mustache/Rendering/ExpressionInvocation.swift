@@ -23,11 +23,11 @@
 struct ExpressionInvocation {
     let expression: Expression
     
-    func invokeWithContext(context: Context) throws -> MustacheBox {
+    func invoke(withContext context: Context) throws -> MustacheBox {
         return try evaluate(context: context, expression: expression)
     }
     
-    private func evaluate(context context: Context, expression: Expression) throws -> MustacheBox {
+    private func evaluate(context: Context, expression: Expression) throws -> MustacheBox {
         switch expression {
         case .ImplicitIterator:
             // {{ . }}
@@ -37,12 +37,12 @@ struct ExpressionInvocation {
         case .Identifier(let identifier):
             // {{ identifier }}
             
-            return context.mustacheBoxForKey(identifier)
+            return context.mustacheBox(forKey: identifier)
 
         case .Scoped(let baseExpression, let identifier):
             // {{ <expression>.identifier }}
             
-            return try evaluate(context: context, expression: baseExpression).mustacheBoxForKey(identifier)
+            return try evaluate(context: context, expression: baseExpression).mustacheBox(forKey: identifier)
             
         case .Filter(let filterExpression, let argumentExpression, let partialApplication):
             // {{ <expression>(<expression>) }}

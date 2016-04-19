@@ -145,7 +145,7 @@ final public class MustacheBox {
     - parameter key: A key.
     - returns: The MustacheBox for *key*.
     */
-    public func mustacheBoxForKey(key: String) -> MustacheBox {
+    public func mustacheBox(forKey key: String) -> MustacheBox {
         return keyedSubscript?(key: key) ?? Box()
     }
     
@@ -491,7 +491,7 @@ final public class MustacheBox {
                     let context = info.context.extendedContext(self)
                     
                     // Renders the inner content of the section tag:
-                    return try info.tag.render(context)
+                    return try info.tag.render(context: context)
                 }
             }
         }

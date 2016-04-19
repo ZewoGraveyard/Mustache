@@ -71,7 +71,7 @@ final public class Context {
     - parameter box: A box.
     - returns: A new context that contains *box*.
     */
-    public convenience init(_ box: MustacheBox) {
+    public convenience init(box: MustacheBox) {
         self.init(type: .Box(box: box, parent: Context()))
     }
 
@@ -84,7 +84,7 @@ final public class Context {
     - returns: A new context with *box* registered for *key*.
     */
     public convenience init(registeredKey key: String, box: MustacheBox) {
-        self.init(type: .Root, registeredKeysContext: Context(Box(boxable: [key: box])))
+        self.init(type: .Root, registeredKeysContext: Context(box: Box(boxable: [key: box])))
     }
 
 
@@ -99,7 +99,7 @@ final public class Context {
     - returns: A new context with *box* pushed at the top of the stack.
     */
     @warn_unused_result(message: "Context.extendedContext returns a new Context.")
-    public func extendedContext(box: MustacheBox) -> Context {
+    public func extendedContext(_ box: MustacheBox) -> Context {
         return Context(type: .Box(box: box, parent: self), registeredKeysContext: registeredKeysContext)
     }
 
@@ -112,7 +112,7 @@ final public class Context {
     - returns: A new context with *box* registered for *key*.
     */
     @warn_unused_result(message: "Context.contextWithRegisteredKey returns a new Context.")
-    public func contextWithRegisteredKey(key: String, box: MustacheBox) -> Context {
+    public func context(withRegisteredKey key: String, box: MustacheBox) -> Context {
         let registeredKeysContext = (self.registeredKeysContext ?? Context()).extendedContext(Box(boxable: [key: box]))
         return Context(type: self.type, registeredKeysContext: registeredKeysContext)
     }
@@ -160,9 +160,9 @@ final public class Context {
     - parameter key: A key.
     - returns: The MustacheBox for *key*.
     */
-    public func mustacheBoxForKey(key: String) -> MustacheBox {
+    public func mustacheBox(forKey key: String) -> MustacheBox {
         if let registeredKeysContext = registeredKeysContext {
-            let box = registeredKeysContext.mustacheBoxForKey(key)
+            let box = registeredKeysContext.mustacheBox(forKey: key)
             if !box.isEmpty {
                 return box
             }
@@ -172,14 +172,14 @@ final public class Context {
         case .Root:
             return Box()
         case .Box(box: let box, parent: let parent):
-            let innerBox = box.mustacheBoxForKey(key)
+            let innerBox = box.mustacheBox(forKey: key)
             if innerBox.isEmpty {
-                return parent.mustacheBoxForKey(key)
+                return parent.mustacheBox(forKey: key)
             } else {
                 return innerBox
             }
         case .PartialOverride(partialOverride: _, parent: let parent):
-            return parent.mustacheBoxForKey(key)
+            return parent.mustacheBox(forKey: key)
         }
     }
 
@@ -198,12 +198,12 @@ final public class Context {
 
     - returns: The value of the expression.
     */
-    public func mustacheBoxForExpression(string: String) throws -> MustacheBox {
+    public func mustacheBox(forExpressionString string: String) throws -> MustacheBox {
         let parser = ExpressionParser()
         var empty = false
-        let expression = try parser.parse(string, empty: &empty)
+        let expression = try parser.parse(string: string, empty: &empty)
         let invocation = ExpressionInvocation(expression: expression)
-        return try invocation.invokeWithContext(self)
+        return try invocation.invoke(withContext: self)
     }
 
 
@@ -265,7 +265,7 @@ final public class Context {
         self.registeredKeysContext = registeredKeysContext
     }
 
-    func extendedContext(partialOverride partialOverride: TemplateASTNode.PartialOverride) -> Context {
+    func extendedContext(partialOverride: TemplateASTNode.PartialOverride) -> Context {
         return Context(type: .PartialOverride(partialOverride: partialOverride, parent: self), registeredKeysContext: registeredKeysContext)
     }
 }
