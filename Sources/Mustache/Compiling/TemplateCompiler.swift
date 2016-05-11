@@ -432,7 +432,7 @@ extension String {
                 break
             }
         }
-        return self[startIndex.advanced(by: trimStartIndex) ..< endIndex]
+        return self[self.index(startIndex, offsetBy: trimStartIndex) ..< endIndex]
     }
 
     private func string(byTrimmingFromEndCharactersInSet characterSet: Set<Character>) -> String {
@@ -443,7 +443,7 @@ extension String {
                 break
             }
         }
-        return self[startIndex ..< startIndex.advanced(by: characters.count - trimEndIndex)]
+        return self[startIndex ..< self.index(startIndex, offsetBy: characters.count - trimEndIndex)]
     }
 }
 
