@@ -898,7 +898,7 @@ extension Collection {
 }
 
 // Support for Set
-extension Collection where Index.Distance == Int {
+extension Collection where IndexDistance == Int {
     /**
     This function returns a MustacheBox that wraps a set-like collection.
     
@@ -947,7 +947,7 @@ extension Collection where Index.Distance == Int {
 }
 
 // Support for Array
-extension Collection where Index.Distance == Int, Index: BidirectionalIndex {
+extension BidirectionalCollection where IndexDistance == Int {
     /**
     This function returns a MustacheBox that wraps an array-like collection.
     
@@ -1044,7 +1044,7 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.Index.Distance == Int>(set: C?) -> MustacheBox {
+public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.IndexDistance == Int>(set: C?) -> MustacheBox {
     if let set = set {
         return set.mustacheBox(withSetValue: set, box: { Box(boxable: $0) })
     } else {
@@ -1095,7 +1095,7 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.Index: BidirectionalIndex, C.Index.Distance == Int>(array: C?) -> MustacheBox {
+public func Box<C: BidirectionalCollection where C.Iterator.Element: MustacheBoxable, C.IndexDistance == Int>(array: C?) -> MustacheBox {
     if let array = array {
         return array.mustacheBox(withArrayValue: array, box: { Box(boxable: $0) })
     } else {
@@ -1146,7 +1146,7 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: Collection, T where C.Iterator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndex, C.Index.Distance == Int>(array: C?) -> MustacheBox {
+public func Box<C: BidirectionalCollection, T where C.Iterator.Element == Optional<T>, T: MustacheBoxable, C.IndexDistance == Int>(array: C?) -> MustacheBox {
     if let array = array {
         return array.mustacheBox(withArrayValue: array, box: { Box(boxable: $0) })
     } else {
