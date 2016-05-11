@@ -506,8 +506,8 @@ final public class MustacheBox {
         let dictionaryValue: (() -> [String: MustacheBox]?)
         
         init(
-            @autoclosure(escaping) arrayValue: () -> [MustacheBox]? = nil,
-            @autoclosure(escaping) dictionaryValue: () -> [String: MustacheBox]? = nil)
+            arrayValue: @autoclosure(escaping)() -> [MustacheBox]? = nil,
+            dictionaryValue: @autoclosure(escaping)() -> [String: MustacheBox]? = nil)
         {
             self.arrayValue = arrayValue
             self.dictionaryValue = dictionaryValue

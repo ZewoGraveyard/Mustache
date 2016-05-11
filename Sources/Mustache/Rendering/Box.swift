@@ -821,7 +821,7 @@ extension Collection {
                      whatever the type of the collection items.
     - returns: A Rendering
     */
-    private func renderItems(info: RenderingInfo, @noescape box: (Iterator.Element) -> MustacheBox) throws -> Rendering {
+    private func renderItems(info: RenderingInfo, box: @noescape(Iterator.Element) -> MustacheBox) throws -> Rendering {
         // Prepare the rendering. We don't known the contentType yet: it depends on items
         var info = info
         var buffer = ""
