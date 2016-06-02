@@ -30,4 +30,4 @@ xcuserdata
 *.xcscmblueprint
 XcodeDevelopment/
 .build
-.xcodeproj
+*.xcodeproj
