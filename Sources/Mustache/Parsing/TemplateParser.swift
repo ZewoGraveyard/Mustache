@@ -324,7 +324,7 @@ final class TemplateParser {
                 templateID: templateID,
                 templateString: templateString,
                 range: range)
-            tokenConsumer.parser(parser: self, shouldContinueAfterParsingToken: token)
+            let _ = tokenConsumer.parser(parser: self, shouldContinueAfterParsingToken: token)
         case .Tag(_, let startLineNumber):
             let error = MustacheError(kind: .ParseError, message: "Unclosed Mustache tag", templateID: templateID, lineNumber: startLineNumber)
             tokenConsumer.parser(parser: self, didFailWithError: error)
