@@ -123,7 +123,11 @@ extension MustacheError : CustomStringConvertible {
         var description: String
         switch kind {
         case .TemplateNotFound:
-            description = ""
+            if let locationDescription = locationDescription {
+                description = "Template not found at \(locationDescription)"
+            } else {
+                description = "Template not found"
+            }
         case .ParseError:
             if let locationDescription = locationDescription {
                 description = "Parse error at \(locationDescription)"
