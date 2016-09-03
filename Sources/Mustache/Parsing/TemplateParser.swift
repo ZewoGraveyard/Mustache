@@ -22,7 +22,7 @@
 
 protocol TemplateTokenConsumer {
     func parser(parser: TemplateParser, shouldContinueAfterParsingToken token: TemplateToken) -> Bool
-    func parser(parser: TemplateParser, didFailWithError error: ErrorProtocol)
+    func parser(parser: TemplateParser, didFailWithError error: Swift.Error)
 }
 
 extension String {
