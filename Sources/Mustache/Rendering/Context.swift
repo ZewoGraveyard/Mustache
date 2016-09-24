@@ -217,7 +217,7 @@ final public class Context {
     }
 
     private var registeredKeysContext: Context?
-    private let type: ContextType
+    fileprivate let type: ContextType
 
     var willRenderStack: [WillRenderFunction] {
         switch type {

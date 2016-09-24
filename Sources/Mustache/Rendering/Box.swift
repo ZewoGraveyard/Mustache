@@ -821,7 +821,7 @@ extension Collection {
                      whatever the type of the collection items.
     - returns: A Rendering
     */
-    private func renderItems(info: RenderingInfo, box: @noescape(Iterator.Element) -> MustacheBox) throws -> Rendering {
+    fileprivate func renderItems(info: RenderingInfo, box: @noescape(Iterator.Element) -> MustacheBox) throws -> Rendering {
         // Prepare the rendering. We don't known the contentType yet: it depends on items
         var info = info
         var buffer = ""
@@ -844,7 +844,7 @@ extension Collection {
         info.enumerationItem = true
         
         for item in self {
-            let boxRendering = try box(item).render(info: info)
+            let boxRendering = try box(item).render(info)
             if contentType == nil
             {
                 // First item: now we know our contentType
@@ -913,7 +913,7 @@ extension Collection where IndexDistance == Int {
                        whatever the type of the collection items.
     - returns: A MustacheBox that wraps the collection.
     */
-    private func mustacheBox(withSetValue value: Any?, box: (Iterator.Element) -> MustacheBox) -> MustacheBox {
+    fileprivate func mustacheBox(withSetValue value: Any?, box: @escaping (Iterator.Element) -> MustacheBox) -> MustacheBox {
         return MustacheBox(
             converter: MustacheBox.Converter(arrayValue: self.map({ box($0) })),
             value: value,
@@ -963,7 +963,7 @@ extension BidirectionalCollection where IndexDistance == Int {
                        whatever the type of the collection items.
     - returns: A MustacheBox that wraps the collection.
     */
-    private func mustacheBox(withArrayValue value: Any?, box: (Iterator.Element) -> MustacheBox) -> MustacheBox {
+    fileprivate func mustacheBox(withArrayValue value: Any?, box: @escaping (Iterator.Element) -> MustacheBox) -> MustacheBox {
         return MustacheBox(
             converter: MustacheBox.Converter(arrayValue: self.map({ box($0) })),
             value: value,
@@ -1319,7 +1319,7 @@ See also:
 
 - FilterFunction
 */
-public func Box(filter: FilterFunction) -> MustacheBox {
+public func Box(filter: @escaping FilterFunction) -> MustacheBox {
     return MustacheBox(filter: filter)
 }
 
@@ -1340,7 +1340,7 @@ See also:
 
 - RenderFunction
 */
-public func Box(render: RenderFunction) -> MustacheBox {
+public func Box(render: @escaping RenderFunction) -> MustacheBox {
     return MustacheBox(render: render)
 }
 
@@ -1372,7 +1372,7 @@ See also:
 
 - WillRenderFunction
 */
-public func Box(willRender: WillRenderFunction) -> MustacheBox {
+public func Box(willRender: @escaping WillRenderFunction) -> MustacheBox {
     return MustacheBox(willRender: willRender)
 }
 
@@ -1405,7 +1405,7 @@ See also:
 
 - DidRenderFunction
 */
-public func Box(didRender: DidRenderFunction) -> MustacheBox {
+public func Box(didRender: @escaping DidRenderFunction) -> MustacheBox {
     return MustacheBox(didRender: didRender)
 }
 
