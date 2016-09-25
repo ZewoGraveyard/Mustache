@@ -148,7 +148,7 @@ final class RenderingEngine {
         // 2. Let willRender functions alter the box
         
         for willRender in context.willRenderStack {
-            box = willRender(tag: tag, box: box)
+            box = willRender(tag, box)
         }
         
         
@@ -159,14 +159,14 @@ final class RenderingEngine {
             switch tag.type {
             case .Variable:
                 let info = RenderingInfo(tag: tag, context: context, enumerationItem: false)
-                rendering = try box.render(info: info)
+                rendering = try box.render(info)
             case .Section:
                 switch (inverted, box.boolValue) {
                 case (false, true):
                     // {{# true }}...{{/ true }}
                     // Only case where we trigger the RenderFunction of the Box
                     let info = RenderingInfo(tag: tag, context: context, enumerationItem: false)
-                    rendering = try box.render(info: info)
+                    rendering = try box.render(info)
                 case (true, false):
                     // {{^ false }}...{{/ false }}
                     rendering = try tag.render(context: context)
@@ -178,7 +178,7 @@ final class RenderingEngine {
             }
         } catch {
             for didRender in context.didRenderStack {
-                didRender(tag: tag, box: box, string: nil)
+                didRender(tag, box, nil)
             }
             // TODO? Inject location in error
             throw error
@@ -199,7 +199,7 @@ final class RenderingEngine {
         // 5. Let didRender functions do their job
         
         for didRender in context.didRenderStack {
-            didRender(tag: tag, box: box, string: string)
+            didRender(tag, box, string)
         }
     }
     

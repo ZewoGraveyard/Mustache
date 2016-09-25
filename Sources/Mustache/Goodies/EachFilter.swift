@@ -53,7 +53,7 @@ let EachFilter = Filter { (box: MustacheBox) -> MustacheBox in
                 position["@last"] = Box(boxable: (index == count - 1))
                 position["@key"] = Box(boxable: element.key)
                 info.context = info.context.extendedContext(Box(boxable: position))
-                return try element.box.render(info: info)
+                return try element.box.render(info)
             }
             return Box(render: customRenderFunction)
         }
@@ -85,7 +85,7 @@ let EachFilter = Filter { (box: MustacheBox) -> MustacheBox in
                 position["@first"] = Box(boxable: index == 0)
                 position["@last"] = Box(boxable: (index == count - 1))
                 info.context = info.context.extendedContext(Box(boxable: position))
-                return try box.render(info: info)
+                return try box.render(info)
             }
             return Box(render: customRenderFunction)
         }

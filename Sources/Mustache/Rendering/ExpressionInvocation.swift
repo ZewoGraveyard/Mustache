@@ -58,7 +58,7 @@ struct ExpressionInvocation {
             }
             
             let argumentBox = try evaluate(context: context, expression: argumentExpression)
-            return try filter(box: argumentBox, partialApplication: partialApplication)
+            return try filter(argumentBox, partialApplication)
         }
     }
 }
