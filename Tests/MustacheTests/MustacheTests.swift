@@ -18,7 +18,7 @@ class MustacheTests: XCTestCase {
 }
 
 extension MustacheTests {
-    static var allTests : [(String, MustacheTests -> () throws -> Void)] {
+    static var allTests : [(String, (MustacheTests) -> () throws -> Void)] {
         return [
             ("testRenderArray", testRenderArray),
             ("testRenderDict", testRenderDict)
